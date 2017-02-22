@@ -1,5 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { AuthService } from './auth.service';
+import { Subscription } from 'rxjs/Rx';
+
 @Component({
     selector: 'my-header',
     template: `
@@ -26,15 +28,25 @@ import { AuthService } from './auth.service';
         </header>
     `
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy{
+    isAuthenticated = false;
+    private subscription: Subscription;  //why we need a subscription? because I want to control the thing I listen to, and I can destroy it onDestroy.
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService) {
+        this.subscription = this.authService.isAuthenticated().subscribe(
+            authStatus => this.isAuthenticated = authStatus
+        );
+    }
 
     isAuth() {
-        return this.authService.isAuthenticated();
+        return this.authService.isAuthenticated;
     }
 
     onLogout() {
         this.authService.logout();
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();   //unsubscribe the subscription on destroy of the component
     }
 }
