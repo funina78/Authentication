@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators, FormControl } from "@angular/forms";
 
+import { AuthService } from '../shared/auth.service';
+
 @Component({
     template: `
         <h3>Please sign up to use all features</h3>
@@ -9,7 +11,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from "@angular/forms"
                 <label for="email">E-Mail</label>
                 <input formControlName="email" type="email" id="email" #email class="form-control">
                 <span *ngIf="!email.pristine && email.errors != null && email.errors['noEmail']">Invalid mail address</span>
-        
+
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
@@ -29,11 +31,11 @@ export class SignupComponent implements OnInit {
     error = false;
     errorMessage = '';
 
-    constructor(private fb: FormBuilder) {
+    constructor(private fb: FormBuilder, private authService: AuthService) {
     }
 
     onSignup() {
-
+        this.authService.signupUser(this.myForm.value);
     }
 
     ngOnInit(): any {
